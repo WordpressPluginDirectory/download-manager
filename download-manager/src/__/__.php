@@ -462,16 +462,23 @@ class __
 		// Parse and normalize the URL
 		$parsedUrl = parse_url($url);
 		if (!isset($parsedUrl['scheme'])) {
-			return false;
+			return apply_filters( '__is_url', false, $url );
 		}
 
 		$scheme = strtolower($parsedUrl['scheme']);
 
+		if (isset($parsedUrl['path'])) {
+			$segments = explode('/', $parsedUrl['path']);
+			$parsedUrl['path'] = implode('/', array_map('rawurlencode', $segments));
+		}
+
 		// Normalize fragment by encoding it (to pass filter_var and comply with RFCs)
 		if (isset($parsedUrl['fragment'])) {
 			$parsedUrl['fragment'] = rawurlencode($parsedUrl['fragment']);
-			$url = self::rebuildUrl($parsedUrl);
 		}
+
+		$url = self::rebuildUrl($parsedUrl);
+
 
 		// Scheme-specific validation
 		if (!in_array($scheme, $allowedSchemes, true)) {
@@ -488,7 +495,7 @@ class __
 			// Fallback: generic URI format validation for other schemes
 			$isValid = preg_match('/^[a-z][a-z0-9+\-.]*:[^\s]+$/i', $url) === 1;
 		}
-        //wpdmdd( (int)$isValid, $url);
+		//wpdmdd( (int)$isValid, $url);
 		return apply_filters( '__is_url', $isValid, $url );
 	}
 
