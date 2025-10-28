@@ -12,10 +12,10 @@ global $wp_scripts;
 
             <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/adminui/css/base.min.css" />
             <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/css/admin-styles.css" />
-            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" />
+            <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/fontawesome/css/all.css" />
             <script src="<?php echo includes_url(); ?>/js/jquery/jquery.js"></script>
             <script src="<?php echo includes_url(); ?>/js/jquery/jquery.form.min.js"></script>
-            <script src="<?php echo WPDM_BASE_URL; ?>assets/adminui/js/bootstrap.min.js"></script>
+            <script src="<?php echo WPDM_BASE_URL; ?>assets/js/wpdm.min.js"></script>
             <script src="<?php echo WPDM_BASE_URL; ?>assets/js/front.js"></script>
 
 
@@ -665,6 +665,10 @@ global $wp_scripts;
 
             }
 
+            .w3eden .modal.fade .modal-dialog{
+                transform: none !important;
+            }
+
         </style>
 
 
@@ -721,12 +725,12 @@ global $wp_scripts;
                                     <div id="ldn" style="float:right;font-size: 9pt;margin-top: 10px;display: none" class="text-danger"><i class="fa fa-sun fa-spin"></i> Loading...</div>
                                     <div v-if="total_pages > 1" id="__asset_pages" style="margin: 0;float: right;font-weight: 400;font-family: 'Overpass Mono', sans-serif !important;white-space: nowrap">
                                         <div style="float:left;">
-                                            <div class="c-pointer d-inline-block" v-on:click="assetPages.prevPage()"><i v-if="current_page > 1" class="fa fa-arrow-alt-circle-left"></i></div> <span class="text-muted">On Page</span> <strong>{{current_page}}</strong> <span class="text-muted">of total</span> <strong>{{total_pages}}</strong> <div class="c-pointer d-inline-block" v-if="current_page < total_pages" v-on:click="assetPages.nextPage()"><i class="fa fa-arrow-alt-circle-right"></i></div>
+                                            <div class="c-pointer d-inline-block" v-on:click="prevPage()"><i v-if="current_page > 1" class="fa fa-arrow-alt-circle-left"></i></div> <span class="text-muted">On Page</span> <strong>{{current_page}}</strong> <span class="text-muted">of total</span> <strong>{{total_pages}}</strong> <div class="c-pointer d-inline-block" v-if="current_page < total_pages" v-on:click="nextPage()"><i class="fa fa-arrow-alt-circle-right"></i></div>
                                         </div>
                                         <div style="display: inline-block;margin-left: 10px">
                                             <div class="input-group input-group-xs" style="width: 90px;">
                                                 <input type="number" @input="event => goto_page = event.target.value" :value="current_page" :max="total_pages" min="1" placeholder="Page" class="form-control" style="min-height: 16px; line-height: 20px; height: 20px; padding: 0px; font-size: 10px;text-align: center;font-family: 'Overpass Mono', monospace;">
-                                                <div class="input-group-btn"><button type="button" v-on:click="assetPages.gotoPage()" class="btn btn-secondary btn-xs">GO</button></div>
+                                                <div class="input-group-btn"><button type="button" v-on:click="gotoPage()" class="btn btn-secondary btn-xs">GO</button></div>
                                             </div>
                                         </div>
                                     </div>
@@ -827,7 +831,67 @@ global $wp_scripts;
                             var current_path = '', editor = '', opened = '', wpdmfm_selected_files = [], wpdmfm_active_asset_settings, $ = jQuery;
                             var ajaxurl = "<?php echo admin_url('/admin-ajax.php'); ?>";
 
-                            var assetPages = new Vue({
+                            /* === assetPages === */
+                            var assetPages = Vue.createApp({
+                                data() {
+                                    return {
+                                        total_pages: 1,
+                                        current_page: 1,
+                                        items_per_page: 15,
+                                        goto_page: 1
+                                    };
+                                },
+                                methods: {
+                                    nextPage() {
+                                        let topage = this.current_page + 1;
+                                        topage = topage > this.total_pages ? 1 : topage;
+                                        WPDMAM.scanDir(current_path, topage);
+                                    },
+                                    prevPage() {
+                                        let topage = this.current_page - 1;
+                                        topage = topage < 1 ? 1 : topage;
+                                        WPDMAM.scanDir(current_path, topage);
+                                    },
+                                    gotoPage() {
+                                        WPDMAM.scanDir(current_path, this.goto_page);
+                                    }
+                                }
+                            }).mount('#__asset_pages');
+
+                            /* === fileList === */
+                            var fileList = Vue.createApp({
+                                data() {
+                                    return {
+                                        files: []
+                                    };
+                                }
+                            }).mount('#__file_list');
+
+                            /* === linkSettings === */
+                            var linkSettings = Vue.createApp({
+                                data() {
+                                    return {
+                                        link: {
+                                            access: {
+                                                roles: ['guest'],
+                                                users: ['admin']
+                                            }
+                                        }
+                                    };
+                                },
+                                methods: {
+                                    roleSelected(role) {
+                                        for (var i = 0; i < this.link.access.roles.length; i++) {
+                                            if (this.link.access.roles[i] === role) {
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                }
+                            }).mount('#__link_settings');
+
+                            /*var assetPages = new Vue({
                                 el: '#__asset_pages',
                                 data: {
                                     total_pages: 1,
@@ -880,7 +944,7 @@ global $wp_scripts;
                                         return false
                                     }
                                 }
-                            });
+                            });*/
 
                             /* View in fullscreen */
                             function openFullscreen(elementid) {
@@ -1239,7 +1303,7 @@ global $wp_scripts;
             });
 
             $(window).on('resize', function () {
-                $('#wpdm-asset-picker .modal-content').css('height', (window.innerHeight - 200) + 'px');
+                $('#wpdm-asset-picker .modal-content').css('height', (window.innerHeight - 210) + 'px');
                 jQuery('#wpdm-asset-picker [data-simplebar]').css('height', (window.innerHeight - 345) + 'px');
             });
 
@@ -1248,7 +1312,7 @@ global $wp_scripts;
 
         function showModal() {
             jQuery('#wpdm-asset-picker').modal('show');
-            jQuery('#wpdm-asset-picker .modal-content').css('height', (window.innerHeight - 200) + 'px');
+            jQuery('#wpdm-asset-picker .modal-content').css('height', (window.innerHeight - 210) + 'px');
             jQuery('#wpdm-asset-picker [data-simplebar]').css('height', (window.innerHeight - 345) + 'px');
 
         }
