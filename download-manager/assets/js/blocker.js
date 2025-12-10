@@ -1,13 +1,20 @@
 async function detectAdblock({ timeoutMs = 2500 } = {}) {
-
+    // 0) Optional: neutral bait that your CSS won't hide by accident
     ensureBait();
 
+    // 1) Control: should NEVER be blocked
     const controlOk = await loadScript(wpdm_url.site+'wp-content/plugins/download-manager/assets/js/control/ping.js', timeoutMs);
 
+    // 2) Decoy: LIKELY to be blocked by ad-block lists
     const decoyOk = await loadScript(wpdm_url.site+'wp-content/plugins/download-manager/assets/js/ads/adserver.js', timeoutMs);
 
+    // 3) Bait: if your styles/extensions hide ad-like selectors
     const baitHidden = isBaitHidden();
 
+    // Decide:
+    // - If control fails, environment is flaky/CSP — don't claim adblock.
+    // - If control passes AND decoy fails -> likely adblock.
+    // - BaitHidden is a weak signal, used only to strengthen confidence.
     const likelyAdblock = controlOk && !decoyOk;
     return {
         isAdblock: likelyAdblock || (likelyAdblock && baitHidden),
@@ -28,6 +35,7 @@ function loadScript(src, timeoutMs) {
         s.onload = () => { clearTimeout(timer); done(true); };
         s.onerror = () => { clearTimeout(timer); done(false); };
 
+        // If a blocker removes the element outright, we still have the timeout fallback
         document.head.appendChild(s);
     });
 }
@@ -62,6 +70,8 @@ function isBaitHidden() {
     return hidden;
 }
 
+// Example usage:
+
 jQuery(function($) {
 
     detectAdblock().then(({ isAdblock, details }) => {
@@ -73,7 +83,8 @@ jQuery(function($) {
                 WPDM.bootAlert("Ad blocker detected", abmsg);
                 return false;
             });
-            //WPDM.bootAlert("Ad blocker detected", abmsg)
+            if( abmsgd === "site" || ( abmsgd === "package" && iswpdmpropage ))
+                WPDM.bootAlert("Ad blocker detected", abmsg)
         }
     });
 

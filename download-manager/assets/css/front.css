@@ -1829,6 +1829,8 @@
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
     padding: 1rem;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
 }
 
 .w3eden .modal-footer {
@@ -3123,9 +3125,8 @@
 }
 
 .w3eden #wdmds .m-icon {
-    display: inline-block;
     width: 30px;
-    line-height: 28px;
+    line-height: 30px;
     height: 30px;
     text-align: center;
     border-radius: 4px;

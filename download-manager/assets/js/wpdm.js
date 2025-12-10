@@ -96,6 +96,7 @@ jQuery(function($) {
         console.log($tabs);
         $tabs.find('a[data-toggle="tab"]').each(function() {
             $(this).removeClass('active');
+            $(this).parent('li').removeClass('active');
             $($(this).attr('href')).removeClass('active');
         });
         $pills.find('a[data-toggle="tab"]').each(function() {
@@ -103,6 +104,7 @@ jQuery(function($) {
             $($(this).attr('href')).removeClass('active');
         });
         $(this).addClass('nav-link active');
+        $(this).parent('li').addClass('active');
         $($(this).attr('href')).addClass('active');
     });
 });

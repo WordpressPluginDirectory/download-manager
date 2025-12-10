@@ -118,11 +118,17 @@ class PackageController extends PackageTemplate {
 		$ID = $post_vars['ID'];
 
 		$post_vars['title']       = stripcslashes( $post_vars['post_title'] );
-		$post_vars['description'] = stripcslashes( wp_kses_post( $post_vars['post_content'] ) );
-		$post_vars['description'] = wpautop( stripslashes( $post_vars['description'] ) );
 
-		if ( ! has_shortcode( $post_vars['description'], 'wpdm_package' ) ) {
-			$post_vars['description'] = do_shortcode( stripslashes( $post_vars['description'] ) );
+		if ( ! has_shortcode( $post_vars['post_content'], 'wpdm_package' ) ) {
+			$post_vars['description'] = wp_kses_post(get_the_content($ID));
+			global $wp_embed;
+			$post_vars['description'] = $wp_embed->autoembed( $post_vars['description'] );
+		} else {
+			$post_vars['description'] = stripcslashes( str_replace("[wpdm", "[__wpdm", wp_kses_post($post_vars['post_content'])) );
+			$post_vars['description'] = wpautop( stripslashes( $post_vars['description'] ) );
+			global $wp_embed;
+			$post_vars['description'] = $wp_embed->autoembed( $post_vars['description'] );
+			$post_vars['description'] = $wp_embed->run_shortcode( $post_vars['description'] );
 		}
 
 		$post_vars['excerpt'] = wpautop( stripcslashes( wpdm_escs( $post_vars['post_excerpt'] ) ) );

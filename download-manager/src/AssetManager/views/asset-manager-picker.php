@@ -17,7 +17,7 @@ global $wp_scripts;
             <script src="<?php echo includes_url(); ?>/js/jquery/jquery.form.min.js"></script>
             <script src="<?php echo WPDM_BASE_URL; ?>assets/js/wpdm.min.js"></script>
             <script src="<?php echo WPDM_BASE_URL; ?>assets/js/front.js"></script>
-
+            <script src="<?php echo WPDM_BASE_URL; ?>assets/js/vue.min.js"></script>
 
         <?php
         //wp_head();
@@ -825,7 +825,6 @@ global $wp_scripts;
 
                         </div>
 
-                        <script src="<?php echo WPDM_BASE_URL ?>assets/js/vue.min.js"></script>
                         <script src="<?php echo WPDM_BASE_URL ?>assets/js/simple-scrollbar.min.js"></script>
                         <script>
                             var current_path = '', editor = '', opened = '', wpdmfm_selected_files = [], wpdmfm_active_asset_settings, $ = jQuery;

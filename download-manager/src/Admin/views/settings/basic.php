@@ -239,6 +239,13 @@
             <div id="abmsg" style="margin-top: 10px;border: 1px solid #eee;border-radius: 4px;background: #fcfcfc;padding: 10px 15px;display:<?php echo !(int)get_option('__wpdm_adblocked_off', 0) ? 'none' : 'block'; ?>;">
                 <label><?php _e("Message to show when ad blocker is active", "download-manager"); ?>:</label><br/>
                 <input class="form-control" type="text" name="__wpdm_adblocked_msg" value="<?php echo esc_attr(get_option('__wpdm_adblocked_msg', 'We noticed an ad blocker. Consider whitelisting us to support the site ❤️')); ?>" />
+                <hr/>
+                <strong><?php _e('When to show the notice?', 'download-manager') ?></strong><br/>
+                <select name="__wpdm_adblocked_msgd" style="max-width: 100%;width: 310px;">
+                    <option value="download"><?php _e("When user clicks on download link", "download-manager"); ?></option>
+                    <option value="package" <?php selected(get_option('__wpdm_adblocked_msgd', 'download'), 'package') ?> ><?php _e("As soon as user opens the download page", "download-manager"); ?></option>
+                    <option value="site" <?php selected(get_option('__wpdm_adblocked_msgd', 'download'), 'site') ?>><?php _e("After every page load", "download-manager"); ?></option>
+                </select>
             </div>
         </div>
         <hr/>

@@ -3,9 +3,9 @@ Contributors: w3eden, codename065, shahriar0822, shimo16ab, shafayat-alam
 Donate link:
 Tags: download manager, document management, file manager, digital store, ecommerce, download monitor
 Requires at least: 5.3
-Tested up to: 6.8
+Tested up to: 6.9
 License: GPLv3
-Stable tag: 3.3.30
+Stable tag: 3.3.34
 
 
 This File Management & Digital Store plugin will help you to control file downloads & sell digital products from your WP site.
@@ -202,6 +202,20 @@ By using this plugin, you acknowledge and agree to the terms and policies of the
 19. More features
 
 == Changelog ==
+
+= 3.3.34 - 2025.12.10 =
+* Fixed an issue with the terms lock option.
+
+= 3.3.33 - 2025.12.08 =
+* Fixed the nonce check issue with the media protection function ( Reported by Wordfence )
+* Improved front-end and admin ui
+
+= 3.3.32 - 2025.11.05 =
+* Fixed an issue with the asset manager file picker
+
+= 3.3.31 - 2025.11.05 =
+* Improved cron job functions
+* Improved ad blocker detection features
 
 = 3.3.30 - 2025.10.28 =
 * Fixed an issue with the cron job functions ( Reported by Wordfence )

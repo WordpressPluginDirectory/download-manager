@@ -72,7 +72,7 @@ class AdminController {
 
         global $pagenow;
         $allow_bscss = array('profile.php', 'user-edit.php',  'upload.php');
-        $wpdm_pages = array( 'settings', 'emails', 'wpdm-stats', 'templates', 'importable-files', 'wpdm-addons', 'orders', 'pp-license');
+        $wpdm_pages = array( 'wpdm-settings', 'emails', 'wpdm-stats', 'templates', 'importable-files', 'wpdm-addons', 'orders', 'pp-license', 'wpdm-asset-manager');
         if (wpdm_query_var('post_type') === 'wpdmpro' || get_post_type() === 'wpdmpro' || in_array(wpdm_query_var('page'), $wpdm_pages) || ($pagenow == 'index.php' && wpdm_query_var('page') == '') || in_array($pagenow, $allow_bscss)) {
             //wpdmdd("OK");
             wp_enqueue_script('jquery');
@@ -95,9 +95,8 @@ class AdminController {
 
             wp_enqueue_script('wpdm-admin-js' );
 
-			if(wpdm_query_var('page') == 'wpdm-settings' || wpdm_query_var('tab') == 'wpdm-asset-manager') {
-				wp_enqueue_script('wpdm-vue', WPDM_BASE_URL.'assets/js/vue.js');
-		    }
+			if(in_array(wpdm_query_var('page'), $wpdm_pages))
+				wp_enqueue_script('wpdm-vue', WPDM_BASE_URL.'assets/js/vue.min.js');
 
             wp_enqueue_script('wpdm-admin', WPDM_BASE_URL.'assets/js/wpdm-admin.js', array('jquery'));
 

@@ -31,6 +31,7 @@ class Apply
         add_action("wp_ajax_wpdm_generate_password", [$this, 'generatePassword']);
         add_action("wp_ajax_wpdm-activate-shop", [$this, 'activatePremiumPackage']);
 
+        add_filter( 'wp_kses_allowed_html', [$this, 'allowStyleTagInKses'], 10, 2 );
 
         if (is_admin()) return;
 
@@ -700,6 +701,29 @@ class Apply
         include(Template::locate('generate-password.php', __DIR__.'/views'));
         die();
 
+    }
+
+    /**
+     * Allow <style> tag in wp_kses_post filter.
+     *
+     * @param array  $allowed_tags Allowed HTML tags and attributes.
+     * @param string $context      The context for which to retrieve tags.
+     * @return array Modified allowed tags.
+     */
+    function allowStyleTagInKses( $allowed_tags, $context ) {
+        if ( 'post' !== $context ) {
+            return $allowed_tags;
+        }
+
+        $allowed_tags['style'] = array(
+                'type'  => true,
+                'media' => true,
+                'nonce' => true,
+                'id'    => true,
+                'class' => true,
+        );
+
+        return $allowed_tags;
     }
 
     /**

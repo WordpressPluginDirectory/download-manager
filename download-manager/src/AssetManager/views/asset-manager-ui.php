@@ -960,7 +960,6 @@ if(is_admin()){
 
 </div>
 
-    <script src="<?php echo WPDM_BASE_URL ?>assets/js/vue.min.js"></script>
     <script src="<?php echo WPDM_BASE_URL ?>assets/js/simple-scrollbar.min.js"></script>
 <script>
     var current_path = '', editor = '', opened = '', wpdmfm_active_asset = '', wpdmfm_active_asset_settings, $ = jQuery;

@@ -21,7 +21,12 @@ class CronJob
     }
 
 	function cronKey() {
-		return get_option('__wpdm_cron_key', md5($_SERVER['HTTP_HOST']));
+		$key = get_option('__wpdm_cron_key');
+		if(!$key) {
+			$key = wp_generate_password(32, false);
+			update_option('__wpdm_cron_key', $key);
+		}
+		return $key;
 	}
 
 	static function create($type, $data, $execute_at, $repeat_execution = 1, $interval = 0) {

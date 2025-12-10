@@ -1498,14 +1498,14 @@
     background-color: #fff;
     background-image: none;
     border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border-radius: 6px;
     box-shadow: none;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 .w3eden .form-control:focus {
     border-color: rgba(var(--color-primary-rgb), 0.8);
     outline: 0;
-    box-shadow: none;
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
 }
 .w3eden .form-control::-moz-placeholder {
     color: #999;
@@ -1642,7 +1642,7 @@
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 .w3eden select.input-sm {
     height: 30px;
@@ -1946,7 +1946,7 @@
     user-select: none;
     background-image: none;
     border: 1px solid transparent;
-    border-radius: 3px;
+    border-radius: 6px;
 }
 .w3eden .btn.active.focus,
 .w3eden .btn.active:focus,
@@ -2294,14 +2294,14 @@
     padding: 10px 16px;
     font-size: 18px;
     line-height: 1.3333333;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 .w3eden .btn-group-sm > .btn,
 .w3eden .btn-sm {
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 .w3eden .btn-group-xs > .btn,
 .w3eden .btn-xs {
@@ -2759,7 +2759,7 @@
 .w3eden .input-group-addon.input-sm {
     padding: 5px 10px;
     font-size: 12px;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 .w3eden .input-group-addon.input-lg {
     padding: 10px 16px;
@@ -3304,10 +3304,7 @@
 }
 .w3eden .navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
     margin-bottom: 0;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 4px 4px 0 0;
 }
 .w3eden .navbar-btn {
     margin-top: 8px;
@@ -4257,9 +4254,10 @@
     margin-bottom: 20px;
     background-color: #fff;
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 8px;
     -webkit-box-shadow: 0 0 6px rgba(94, 141, 255, 0.1);
     box-shadow: 0 0 6px rgba(94, 141, 255, 0.1);
+    overflow: hidden;
 }
 .w3eden .panel-body {
     padding: 15px;
@@ -4267,8 +4265,7 @@
 .w3eden .panel-heading {
     padding: 12px 15px;
     border-bottom: 1px solid transparent;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    border-radius: 8px 8px 0 0;
 }
 .w3eden .panel-heading > .dropdown .dropdown-toggle {
     color: inherit;

@@ -101,11 +101,12 @@ body,
 
 #wpdm-admin-sub-header .nav.nav-tabs li a {
     margin-right: 5px;
+    border-radius: 6px 6px 0 0 !important;
 }
 
 #wpdm-admin-sub-header .nav.nav-tabs li.active a {
     background: var(--bg-light);
-    box-shadow: 0 -3px 6px rgba(var(--color-primary-rgb), 0.2) !important;
+    box-shadow: 0 -3px 1px rgba(var(--color-primary-rgb), 0.3) !important
 }
 
 .wpdm-admin-page-content {
@@ -173,7 +174,7 @@ body,
 }
 
 #wpdm-wrapper-panel #tabs.nav-pills a {
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     color: #213e5b;
     font-size: 10pt !important;
 }
@@ -321,7 +322,7 @@ body,
     display: block !important;
     margin-top: -240px;
     text-align: center;
-    border-radius: 4px;
+    border-radius: 6px;
     height: 220px;
     padding: 30px;
     position: fixed;
