@@ -174,6 +174,12 @@ class AdminController {
 		                                     'position' => 'side',
 		                                     'priority' => 'core'
 		        ),
+			    'wpdm-changelog' => array(
+                    "title"    => __("Changelog", WPDM_TEXT_DOMAIN),
+                    "callback" => array( $this, 'changelog' ),
+                    "position" => "normal",
+                    "priority" => "default"
+			    ),
 	        );
         } else
             $meta_boxes = [];
@@ -197,6 +203,11 @@ class AdminController {
 
     function uploadFiles($post) {
         include wpdm_admin_tpl_path("metaboxes/attach-file.php" );
+    }
+
+    function changelog($post)
+    {
+        include wpdm_admin_tpl_path("metaboxes/changelog.php" );
     }
 
 	function hideProNotice()

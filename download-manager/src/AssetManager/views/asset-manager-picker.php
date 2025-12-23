@@ -11,7 +11,8 @@ global $wp_scripts;
         <title><?php _e('Asset Manager Picker', 'download-manager') ?></title>
 
             <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/adminui/css/base.min.css" />
-            <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/css/admin-styles.css" />
+            <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/css/admin-styles.min.css" />
+            <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/css/simple-scrollbar.min.css" />
             <link rel="stylesheet" href="<?php echo WPDM_BASE_URL; ?>assets/fontawesome/css/all.css" />
             <script src="<?php echo includes_url(); ?>/js/jquery/jquery.js"></script>
             <script src="<?php echo includes_url(); ?>/js/jquery/jquery.form.min.js"></script>
@@ -64,17 +65,30 @@ global $wp_scripts;
             }
 
             .modal-backdrop{
+                background: rgba(0,0,0,0);
+                transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .modal-backdrop.show{
                 background: rgba(0,0,0,0.5);
             }
 
-
             .modal.fade{
-                opacity:1;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .modal.fade.show{
+                opacity: 1;
+                visibility: visible;
             }
             .modal.fade .modal-dialog {
-                -webkit-transform: translate(0);
-                -moz-transform: translate(0);
-                transform: translate(0);
+                transform: scale(0.95) translateY(-20px);
+                opacity: 0;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .modal.fade.show .modal-dialog {
+                transform: scale(1) translateY(0);
+                opacity: 1;
             }
 
             .modal {
@@ -665,9 +679,7 @@ global $wp_scripts;
 
             }
 
-            .w3eden .modal.fade .modal-dialog{
-                transform: none !important;
-            }
+            /* Modal animation handled by .modal.fade.show .modal-dialog */
 
         </style>
 
@@ -708,7 +720,7 @@ global $wp_scripts;
                                             <button class="btn btn-danger btn-simple btn-sm" data-target="#wpdm-asset-picker" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
                                         </div>
                                         <h3 style="display: inline-block;font-size: 12pt;letter-spacing: 0.5px;font-weight: 400;font-family: var(--wpdm-font)">
-                                            <i class="fas fa-photo-video text-primary"></i> <?php echo __( "Server File Picker", "download-manager" ) ?> <sup style="color: var(--color-info) !important;font-size: 10px;font-family: 'Overpass Mono', sans-serif !important;">BETA</sup>
+                                            <i class="fas fa-photo-video text-primary"></i> <?php echo __( "Server File Picker", "download-manager" ) ?>
                                         </h3>
                                         <?php /* if(!current_user_can('manage_options')){ ?>
                 <div class="media-body">

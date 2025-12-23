@@ -94,19 +94,19 @@ body,
     box-shadow: 0 0 10px rgba(0, 88, 255, 0.55) !important;
 }
 
+
 #wpdm-admin-sub-header .nav.nav-tabs {
-    padding-left: 15px;
-    padding-top: 18px;
+    padding-left: 30px !important;
 }
 
+
+#wpdm-admin-sub-header .nav.nav-tabs li LI,
 #wpdm-admin-sub-header .nav.nav-tabs li a {
-    margin-right: 5px;
-    border-radius: 6px 6px 0 0 !important;
+    margin-right: 0 !important;
 }
-
 #wpdm-admin-sub-header .nav.nav-tabs li.active a {
     background: var(--bg-light);
-    box-shadow: 0 -3px 1px rgba(var(--color-primary-rgb), 0.3) !important
+    box-shadow: 0 -3px 6px rgba(var(--color-primary-rgb), 0.2) !important;
 }
 
 .wpdm-admin-page-content {

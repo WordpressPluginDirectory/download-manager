@@ -87,6 +87,18 @@ class Packages {
 				$meta_value = array_unique( $meta_value );
 			} else if ( $meta_key == 'terms_conditions' ) {
 				$meta_value = __::sanitize_var( $meta_value, 'kses' );
+			} else if ( $meta_key == 'changelog' ) {
+				if ( is_array( $meta_value ) ) {
+					foreach ( $meta_value as &$entry ) {
+						if ( is_array( $entry ) ) {
+							$entry['id'] = sanitize_text_field( $entry['id'] );
+							$entry['version'] = sanitize_text_field( $entry['version'] );
+							$entry['date'] = sanitize_text_field( $entry['date'] );
+							$entry['changes'] = wp_kses_post( $entry['changes'] );
+							$entry['timestamp'] = absint( $entry['timestamp'] );
+						}
+					}
+				}
 			} else {
 				$meta_value = is_array( $meta_value ) ? wpdm_sanitize_array( $meta_value, 'txt' ) : htmlspecialchars( $meta_value );
 			}

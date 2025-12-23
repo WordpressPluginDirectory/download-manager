@@ -567,7 +567,7 @@ class Apply
         //$ptemplates = maybe_unserialize(get_option("_fm_page_templates", true));
 	    $font      = get_option( '__wpdm_google_font', 'Sen' );
 	    $font      = explode( ":", $font );
-	    $font      = $font[0];
+        $font      = str_replace("+", " ", $font[0]);
 	    $font      = $font ? "{$font}" : '';
 	    $font = $font ? "{$font}" : '-apple-system';
 

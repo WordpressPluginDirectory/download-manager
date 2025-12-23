@@ -43,6 +43,29 @@ class Query
 	}
 
 	/**
+	 * Static factory method for convenient instantiation
+	 * @return Query
+	 */
+	static function create()
+	{
+		return new self();
+	}
+
+	/**
+	 * Reset query for reuse
+	 * @return $this
+	 */
+	function reset()
+	{
+		$this->params = [];
+		$this->result = null;
+		$this->packages = [];
+		$this->count = 0;
+		$this->tax_relation = null;
+		return $this;
+	}
+
+	/**
 	 * @param int $items_per_page
 	 */
 	function items_per_page($items_per_page = 10)
@@ -138,10 +161,15 @@ class Query
 		if ($categories) {
 			if($field === 'slug') {
 				if(!is_array($categories)) $categories = explode(",", $categories);
-				foreach ($categories as &$category) {
-					$tempTerm = get_term_by('slug', $category, 'wpdmcategory');
-					if(is_object($tempTerm))
-						$category = $tempTerm->term_id;
+				// Batch lookup instead of N+1 queries
+				$terms = get_terms([
+					'taxonomy' => 'wpdmcategory',
+					'slug' => $categories,
+					'fields' => 'ids',
+					'hide_empty' => false,
+				]);
+				if (!is_wp_error($terms) && !empty($terms)) {
+					$categories = $terms;
 				}
 				$field = 'term_id';
 			}
@@ -249,6 +277,8 @@ class Query
 	/**
 	 * From date filter
 	 * @param null $date
+	 * @param bool $modified Use post_modified_gmt instead of post_date
+	 * @return $this
 	 */
 	function from_date($date = null, $modified = false)
 	{
@@ -264,11 +294,14 @@ class Query
 			if(isset($date[2]))
 				$this->params['date_query']['after']['day'] = $date[2];
 		}
+		return $this;
 	}
 
 	/**
-	 * From date filter
+	 * To date filter
 	 * @param null $date
+	 * @param bool $modified Use post_modified_gmt instead of post_date
+	 * @return $this
 	 */
 	function to_date($date = null, $modified = false)
 	{
@@ -284,6 +317,7 @@ class Query
 			if(isset($date[2]))
 				$this->params['date_query']['before']['day'] = $date[2];
 		}
+		return $this;
 	}
 
 	/**
@@ -372,20 +406,23 @@ class Query
 	 */
 	function process()
 	{
-		global $wpdb;
-
 		if($this->tax_relation && isset($this->params['tax_query']) && is_array($this->params['tax_query']))
 			$this->params['tax_query'] = ['relation' => $this->tax_relation] + $this->params['tax_query'];
 
 		$this->params = apply_filters('wpdm_packages_query_params', $this->params);
 
 		$this->params['post_type'] = $this->post_type;
-
 		$this->result = new \WP_Query($this->params);
-		//wpdmdd($this->result);
-		//wpdmprecho($this->result->tax_query->get_sql('wp_term_relationships', 'ID'));
 		$this->packages = $this->result->get_posts();
 		$this->count = $this->result->found_posts;
+
+		// Prime caches for better performance when accessing package data
+		if (!empty($this->packages)) {
+			$post_ids = wp_list_pluck($this->packages, 'ID');
+			update_postmeta_cache($post_ids);
+			update_object_term_cache($post_ids, $this->post_type);
+		}
+
 		wp_reset_postdata();
 		return $this;
 	}

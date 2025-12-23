@@ -5,7 +5,7 @@ Plugin URI: https://www.wpdownloadmanager.com/purchases/
 Description: Manage, Protect and Track file downloads, and sell digital products from your WordPress site. A complete digital asset management solution.
 Author: W3 Eden, Inc.
 Author URI: https://www.wpdownloadmanager.com/
-Version: 3.3.34
+Version: 3.3.39
 Text Domain: download-manager
 Domain Path: /languages
 */
@@ -40,7 +40,7 @@ use WPDM\Widgets\WidgetController;
 
 global $WPDM;
 
-define('WPDM_VERSION','3.3.34');
+define('WPDM_VERSION','3.3.39');
 
 define('WPDM_TEXT_DOMAIN','download-manager');
 
@@ -440,6 +440,14 @@ final class WordPressDownloadManager{
 
 	    wp_enqueue_style('wpdm-front' );
 
+        // Color scheme support
+        $color_scheme = get_option('__wpdm_color_scheme', 'system');
+        if ($color_scheme === 'dark' || $color_scheme === 'light') {
+            $scheme_class = $color_scheme === 'dark' ? 'dark-mode' : 'light-mode';
+            wp_add_inline_style('wpdm-front', ".w3eden { /* color-scheme: {$color_scheme} */ }");
+            wp_add_inline_script('jquery', "document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.w3eden').forEach(function(el){el.classList.add('{$scheme_class}')})});", 'after');
+        }
+
         wp_register_script('wpdm-frontjs', plugins_url('/assets/js/front.min.js', __FILE__), array('jquery'), WPDM_VERSION);
 
         if((int)get_option('__wpdm_adblocked_off', 0) === 1)
@@ -447,7 +455,7 @@ final class WordPressDownloadManager{
 
         $wpdm_js = array(
             'spinner' => '<i class="wpdm-icon wpdm-sun wpdm-spin"></i>',
-            'client_id' => Session::$deviceID
+            'client_id' => Session::deviceID()
         );
         $wpdm_js = apply_filters("wpdm_js_vars", $wpdm_js);
 
