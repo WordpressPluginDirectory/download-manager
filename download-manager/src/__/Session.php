@@ -1,10 +1,21 @@
 <?php
 /**
- * User: shahnuralam
- * Date: 01/11/18
- * Time: 7:08 PM
- * From v4.7.9
- * Last Updated: 12/23/2024
+ * Session Management Class
+ *
+ * Handles user session data with database or file-based storage.
+ * Uses cookie-based device ID for session tracking.
+ *
+ * @package    WPDM
+ * @subpackage Core
+ * @author     WPDM Team
+ * @since      4.7.9
+ * @version    3.3.39
+ *
+ * @updated    2024-12-23
+ * @changelog  Added function_exists() checks for WordPress functions
+ *             Added fallbacks for early initialization scenarios
+ *             Fixed namespace prefix for global PHP functions
+ *             Improved compatibility with various server configurations
  */
 
 namespace WPDM\__;

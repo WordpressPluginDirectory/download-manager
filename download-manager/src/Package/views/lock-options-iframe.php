@@ -24,6 +24,7 @@ if($post_type !== 'wpdmpro' && $post_status !== 'publish'){
 $form_lock = (int)get_post_meta($ID, '__wpdm_form_lock', true);
 $terms_lock = (int)get_post_meta($ID, '__wpdm_terms_lock', true);
 $base_price = (double)get_post_meta($ID, '__wpdm_base_price', true);
+$color_scheme = get_option('__wpdm_color_scheme', 'light');
 
 ?><!DOCTYPE html>
 <html style="background: transparent">
@@ -542,6 +543,52 @@ $base_price = (double)get_post_meta($ID, '__wpdm_base_price', true);
             }
         }
 
+        /* Manual dark mode - always apply when .dark-mode class is present */
+        .w3eden.dark-mode .modal-content::before {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+        }
+        .w3eden.dark-mode h4.modal-title,
+        .w3eden.dark-mode .modal-content h4 {
+            color: var(--dm-text);
+        }
+        .w3eden.dark-mode .modal-content .color-purple {
+            color: #c4b5fd !important;
+        }
+        .w3eden.dark-mode .modal-icon {
+            background: linear-gradient(145deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .w3eden.dark-mode .close svg {
+            color: var(--dm-text-muted);
+        }
+        .w3eden.dark-mode .close:hover svg {
+            color: #f87171;
+        }
+
+        /* System preference dark mode - only when OS prefers dark AND no light-mode class */
+        @media (prefers-color-scheme: dark) {
+            .w3eden:not(.light-mode) .modal-content::before {
+                background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+            }
+            .w3eden:not(.light-mode) h4.modal-title,
+            .w3eden:not(.light-mode) .modal-content h4 {
+                color: var(--dm-text);
+            }
+            .w3eden:not(.light-mode) .modal-content .color-purple {
+                color: #c4b5fd !important;
+            }
+            .w3eden:not(.light-mode) .modal-icon {
+                background: linear-gradient(145deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            .w3eden:not(.light-mode) .close svg {
+                color: var(--dm-text-muted);
+            }
+            .w3eden:not(.light-mode) .close:hover svg {
+                color: #f87171;
+            }
+        }
+
     </style>
 
 
@@ -549,7 +596,17 @@ $base_price = (double)get_post_meta($ID, '__wpdm_base_price', true);
 
     <?php do_action("wpdm_modal_iframe_head"); ?>
 </head>
-<body class="w3eden" style="background: transparent">
+<?php
+// Build body classes based on color scheme setting
+$body_classes = 'w3eden';
+if ($color_scheme === 'light') {
+    $body_classes .= ' light-mode';
+} elseif ($color_scheme === 'dark') {
+    $body_classes .= ' dark-mode';
+}
+// 'system' = no extra class, follows OS preference via @media (prefers-color-scheme: dark)
+?>
+<body class="<?php echo esc_attr($body_classes); ?>" style="background: transparent">
 
 <div class="modal fade" id="wpdm-locks" tabindex="-1" role="dialog" aria-labelledby="wpdm-optinmagicLabel">
     <div class="modal-dialog modal-dialog-centered" role="document" style="width: <?php echo $terms_lock === 1?395:365; ?>px;max-width: calc(100% - 20px);margin: 0 auto;">
@@ -580,7 +637,6 @@ $base_price = (double)get_post_meta($ID, '__wpdm_base_price', true);
 </div>
 
 <script>
-
     jQuery(function ($) {
 
         $('a').each(function () {

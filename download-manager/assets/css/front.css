@@ -994,7 +994,7 @@
    ========================================================================== */
 
 .w3eden .btn-link {
-    --btn-height: auto;
+    --btn-height: auto !important;
     --btn-px: 0;
     --btn-bg: transparent;
     --btn-color: var(--color-primary);
@@ -1013,7 +1013,7 @@
    ========================================================================== */
 
 .w3eden .btn-xs {
-    --btn-height: 26px;
+    --btn-height: 26px !important;
     --btn-px: 8px;
     --btn-font-size: 11px;
     --btn-radius: 4px;
@@ -1026,7 +1026,7 @@
 }
 
 .w3eden .btn-sm {
-    --btn-height: 30px;
+    --btn-height: 30px !important;
     --btn-px: 10px;
     --btn-font-size: 12px;
     --btn-radius: 5px;
@@ -1039,7 +1039,7 @@
 }
 
 .w3eden .btn-lg {
-    --btn-height: 44px;
+    --btn-height: 44px !important;
     --btn-px: 20px;
     --btn-font-size: 15px;
     --btn-radius: 8px;
