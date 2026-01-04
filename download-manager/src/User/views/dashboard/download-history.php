@@ -1,10 +1,32 @@
-<?php if(!defined('ABSPATH')) die(); ?>
+<?php use WPDM\__\__;
+
+if(!defined('ABSPATH')) die(); ?>
+<?php if(class_exists('\WPDM\AddOn\DownloadLimit')):?>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card card-default dashboard-card">
+            <div class="card-header"><?php _e('Download Limit Resets', 'download-manager'); ?></div>
+            <div class="card-body">
+			    <?php echo do_shortcode("[wpdm_download_limit_reset_timer]") ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-default dashboard-card">
+            <div class="card-header"><?php _e('Download Limit', 'download-manager'); ?></div>
+            <div class="card-body">
+			    <?php echo do_shortcode("[wpdm_user_download_count]") ?> / <?php echo do_shortcode("[wpdm_user_download_limit]") ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 <div class="card card-default dashboard-card">
-    <div class="card-header"><?php echo __( "Download History", "download-manager" ); ?></div>
+    <div class="card-header bg-white"><?php echo __( "Download History", "download-manager" ); ?></div>
     <table class="table">
         <thead>
         <tr>
-            <th><?php _e( "Package Name" , "download-manager" ); ?></th>
+            <th><?php _e( "Package / File" , "download-manager" ); ?></th>
             <th><?php _e( "Download Time" , "download-manager" ); ?></th>
             <th><?php _e( "IP" , "download-manager" ); ?></th>
         </tr>
@@ -13,13 +35,16 @@
         <?php
         global $wp_rewrite, $wp_query;
         $items_per_page = 30;
-        $start = isset($_GET['pgd'])?((int)$_GET['pgd']-1)*$items_per_page:0;
+        $start = isset($_GET['pgd'])?($_GET['pgd']-1)*$items_per_page:0;
         $res = $wpdb->get_results("select p.post_title,s.* from {$wpdb->prefix}posts p, {$wpdb->prefix}ahm_download_stats s where s.uid = '{$current_user->ID}' and s.pid = p.ID order by `timestamp` desc limit $start, $items_per_page");
         foreach($res as $stat){
             ?>
             <tr>
-                <td><a href="<?php echo get_permalink($stat->pid); ?>"><?php echo $stat->post_title; ?></a></td>
-                <td><?php echo date_i18n(get_option('date_format')." H:i", $stat->timestamp); ?></td>
+                <td>
+                    <a class="p-0 d-block mb-1" href="<?php echo get_permalink($stat->pid); ?>"><?php echo $stat->post_title; ?></a>
+                    <div class="text-muted text-small"><i class="far fa-arrow-alt-circle-down mr-1"></i><em><?= __::mask($stat->filename, '...', -20, false) ?: 'Package' ?></em></div>
+                </td>
+                <td><?php echo date_i18n(get_option('date_format')." h:i A",$stat->timestamp + __::timezoneOffset()); ?></td>
                 <td><?php echo $stat->ip; ?></td>
             </tr>
             <?php
@@ -31,7 +56,7 @@
     <div class="card-footer">
         <?php
 
-            isset($_GET['pgd']) && $_GET['pgd'] > 1 ? $current = (int)$_GET['pgd'] : $current = 1;
+            isset($_GET['pgd']) && $_GET['pgd'] > 1 ? $current = $_GET['pgd'] : $current = 1;
             $pagination = array(
                 'base' => @add_query_arg('pgd','%#%'),
                 'format' => '',

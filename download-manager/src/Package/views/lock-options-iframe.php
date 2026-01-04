@@ -37,7 +37,6 @@ $color_scheme = get_option('__wpdm_color_scheme', 'light');
             const wpdm_url = <?php echo json_encode(WPDM()->wpdm_urls);?>;
         </script>
         <link rel="stylesheet" href="<?php echo WPDM_ASSET_URL; ?>css/front.min.css" />
-        <link rel="stylesheet" href="<?= WPDM_FONTAWESOME_URL ?>" />
         <script src="<?php echo includes_url(); ?>/js/jquery/jquery.js"></script>
         <script src="<?php echo includes_url(); ?>/js/jquery/jquery.form.min.js"></script>
         <script src="<?php echo WPDM_ASSET_URL; ?>js/wpdm.js"></script>

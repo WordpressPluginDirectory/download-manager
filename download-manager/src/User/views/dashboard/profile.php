@@ -6,27 +6,21 @@ $roles = array_reverse($wp_roles->role_names);
 $val = get_option( 'wp_user_roles' );
 $levels =  array();
 foreach ($current_user->roles as $role) {
-    $levels[$role] = isset($roles[$role])?$roles[$role]:$role;
+    $levels[] = isset($roles[$role])?$roles[$role]:$role;
 }
 
 ?>
+
+<?php do_action("wpdm_before_user_dashboard_summery"); ?>
 <div class="row">
     <div class="col-md-4">
         <div class="card bg-primary text-white">
             <div class="card-header">
-                <div style="float:right;border: 0 !important;" class="nav role-tabs nav-tabs" role="tablist">
-                    <?php $rc = 0; foreach ($levels as $role => $name){ $rc++; ?>
-                        &nbsp;<a href="#<?php echo $role; ?>" class="<?php if($rc==1) echo  'show active'; ?>" data-toggle="tab"><i class="fa fa-circle"></i></a>
-                    <?php } ?>
 
-                </div>
                 <?php _e( "User Level" , "download-manager" ); ?>
             </div>
             <div class="card-body tab-content">
-                <?php $rc = 0; foreach ($levels as $role => $name){ $rc++; ?>
-                    <h3 class="tab-pane fade <?php if($rc==1) echo  'show active'; ?>"  role="tabcard" aria-labelledby="<?php echo $role; ?>" id="<?php echo $role; ?>"><?php echo $name; ?></h3>
-                <?php } ?>
-
+                <h3><?php echo $levels[0]; ?></h3>
             </div>
         </div>
     </div>
@@ -39,7 +33,7 @@ foreach ($current_user->roles as $role) {
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-info text-white">
+        <div class="card bg-secondary text-white">
             <div class="card-header"><?php _e( "Today's Download" , "download-manager" ); ?></div>
             <div class="card-body">
                 <h3><?php echo number_format($wpdb->get_var("select count(*) from {$wpdb->prefix}ahm_download_stats where uid = '{$current_user->ID}' and `year` = YEAR(CURDATE()) and `month` = MONTH(CURDATE()) and `day` = DAY(CURDATE())"),0,'.',','); ?></h3>
@@ -47,6 +41,7 @@ foreach ($current_user->roles as $role) {
         </div>
     </div>
 </div>
+<?php do_action("wpdm_after_user_dashboard_summery"); ?>
 <?php
 if(isset($params['recommended']) && ( term_exists($params['recommended'], 'wpdmcategory') || $params['recommended'] == 'recent')) {
     ?>
@@ -71,7 +66,7 @@ if(isset($params['recommended']) && ( term_exists($params['recommended'], 'wpdmc
                 $q = new WP_Query($qparams);
                 while ($q->have_posts()) {
                     $q->the_post();
-                    if (WPDM()->package->userCanAccess(get_the_ID()) && has_post_thumbnail(get_the_ID())) {
+                    if (WPDM()->package->userCanAccess(get_the_ID())) {
                         ?>
                         <div class="col-md-6">
                             <div class="media wpdm-rec-item mb-3">
@@ -154,7 +149,7 @@ if(isset($params['fav']) && (int)$params['fav'] == 1) {
             ?>
             <tr>
                 <td><a href="<?php echo get_permalink($stat->pid); ?>"><?php echo $stat->post_title; ?></a></td>
-                <td><?php echo date_i18n(get_option('date_format')." H:i",$stat->timestamp); ?></td>
+                <td><?php echo date_i18n(get_option('date_format')." H:i",$stat->timestamp + wpdm_tzoffset()); ?></td>
                 <td><?php echo $stat->ip; ?></td>
             </tr>
             <?php
