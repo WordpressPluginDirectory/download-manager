@@ -40,9 +40,9 @@ class Login
         // Logout url shortcode
         add_shortcode('wpdm_logout_url', array($this, 'logoutURLShortcode'));
 
-        add_filter("login_url", [$this, 'loginURL'], 999999, 3);
-        add_filter("logout_url", [$this, 'logoutURL'], 999999, 2);
-        add_filter("init", [$this, 'loginURLRedirect']);
+        //add_filter("login_url", [$this, 'loginURL'], 999999, 3);
+        //add_filter("logout_url", [$this, 'logoutURL'], 999999, 2);
+        //add_filter("init", [$this, 'loginURLRedirect']);
         add_filter("template_include", [$this, 'interimLogin'], 9999);
         add_filter('the_content', array($this, 'validateLoginPage'));
 
