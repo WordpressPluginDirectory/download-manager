@@ -74,9 +74,8 @@ class Login
 
 	function reCaptchaVerify($user, $user_login, $user_pass) {
 		if ($this->reCpathcaActive()) {
-			$ret = wpdm_remote_post('https://www.google.com/recaptcha/api/siteverify', array('secret' => get_option('_wpdm_recaptcha_secret_key', ''), 'response' => wpdm_query_var('__recap')));
-			$ret = json_decode($ret);
-			if (!$ret->success) {
+			$ret = wpdm_recaptcha_enterprise_verify(wpdm_query_var('__recap'), 'LOGIN');
+			if (!$ret['success']) {
 				return new \WP_Error( 'recaptcha_failed', __( '<strong>Error:</strong> Captcha verification failed!', 'download-manager' ) );
 			}
 		}

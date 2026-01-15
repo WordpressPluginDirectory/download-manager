@@ -59,9 +59,8 @@ class Register
 
 	function reCaptchaVerify($errors, $sanitized_user_login, $user_email) {
 		if ($this->reCpathcaActive()) {
-			$ret = wpdm_remote_post('https://www.google.com/recaptcha/api/siteverify', array('secret' => get_option('_wpdm_recaptcha_secret_key', ''), 'response' => wpdm_query_var('__recap')));
-			$ret = json_decode($ret);
-			if (!$ret->success) {
+			$ret = wpdm_recaptcha_enterprise_verify(wpdm_query_var('__recap'), 'REGISTER');
+			if (!$ret['success']) {
 				if (!$errors) $errors = new \WP_Error();
 				$errors->add('recaptcha_failed', __('<strong>Error:</strong> Captcha verification failed', 'download-manager'));
 			}

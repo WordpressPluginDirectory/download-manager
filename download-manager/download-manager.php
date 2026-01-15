@@ -5,7 +5,7 @@ Plugin URI: https://www.wpdownloadmanager.com/purchases/
 Description: Manage, Protect and Track file downloads, and sell digital products from your WordPress site. A complete digital asset management solution.
 Author: W3 Eden, Inc.
 Author URI: https://www.wpdownloadmanager.com/
-Version: 3.3.43
+Version: 3.3.46
 Text Domain: download-manager
 Domain Path: /languages
 */
@@ -40,7 +40,7 @@ use WPDM\Widgets\WidgetController;
 
 global $WPDM;
 
-define('WPDM_VERSION','3.3.43');
+define('WPDM_VERSION','3.3.46');
 
 define('WPDM_TEXT_DOMAIN','download-manager');
 
@@ -225,8 +225,7 @@ final class WordPressDownloadManager{
         self::createDir();
 
         // Set flag to redirect to welcome page after activation
-        // Use both transient (with longer expiry) and option as backup for reliability
-        set_transient('wpdm_activation_redirect', 'yes', 300); // 5 minutes
+        set_transient('wpdm_activation_redirect', 'yes', 300);
         update_option('__wpdm_activation_redirect', 'yes', false);
 
     }
@@ -422,7 +421,8 @@ final class WordPressDownloadManager{
 
         if(is_admin()) return;
 
-        wp_register_style('wpdm-front', plugins_url('/assets/css/front.min.css', __FILE__) , 99999999);
+        wp_register_style('wpdm-front', plugins_url('/assets/css/front.min.css', __FILE__), [], WPDM_VERSION);
+        wp_register_style('wpdm-front-dark', plugins_url('/assets/css/front-dark.min.css', __FILE__), ['wpdm-front'], WPDM_VERSION);
         wp_register_script('jquery-validate', plugins_url('/assets/js/jquery.validate.min.js', __FILE__), array('jquery'));
 	    wp_register_script('wpdm-frontend-js', plugins_url('/assets/js/wpdm.min.js', __FILE__), array('jquery'));
 
@@ -447,6 +447,13 @@ final class WordPressDownloadManager{
 
         // Color scheme support
         $color_scheme = get_option('__wpdm_color_scheme', 'system');
+
+        // Only load dark mode CSS when needed (dark or system mode)
+        // For light mode, skip loading front-dark.css entirely (performance + prevents flash)
+        if ($color_scheme !== 'light') {
+            wp_enqueue_style('wpdm-front-dark');
+        }
+
         if ($color_scheme === 'dark' || $color_scheme === 'light') {
             $scheme_class = $color_scheme === 'dark' ? 'dark-mode' : 'light-mode';
             wp_add_inline_style('wpdm-front', ".w3eden { /* color-scheme: {$color_scheme} */ }");

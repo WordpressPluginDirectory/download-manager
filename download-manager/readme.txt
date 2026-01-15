@@ -5,7 +5,7 @@ Tags: download manager, document management, file manager, digital store, ecomme
 Requires at least: 5.3
 Tested up to: 6.9
 License: GPLv3
-Stable tag: 3.3.43
+Stable tag: 3.3.46
 
 
 This File Management & Digital Store plugin will help you to control file downloads & sell digital products from your WP site.
@@ -144,7 +144,7 @@ Download and Install following free add-on to add additional features as per you
 Check download stats and get a push notification when someone downloads, install:
 
 * [WPDM API](https://www.wpdownloadmanager.com/download/wpdm-api/) - install this add-on on your site and configure API key
-* [WPDM for Abdroid](https://www.wpdownloadmanager.com/download/wpdm-android/) - Install the app on your android phone
+* [WPDM for Android](https://www.wpdownloadmanager.com/download/wpdm-android/) - Install the app on your android phone
 * [WPDM for iOS](https://www.wpdownloadmanager.com/download/wpdm-ios/) - Check download and sales stats directly from your iPhone or iPad
 
 = Free Themes =
@@ -202,6 +202,22 @@ By using this plugin, you acknowledge and agree to the terms and policies of the
 19. More features
 
 == Changelog ==
+
+= 3.3.46 - 2026.01.15 =
+* Redesigned email templates
+* Improved light/dark mode support
+
+= 3.3.45 - 2026.01.13 =
+* Added 2 new link templates: Glassmorphism Card and Spotlight Hero
+* Added reCAPTCHA test widget in admin settings to verify configuration
+* Added detailed error messages with troubleshooting guidance for reCAPTCHA errors
+* Added HTTP referrer restriction warning for reCAPTCHA API keys
+* Improved email templates
+
+= 3.3.44 - 2026.01.07 =
+* Migrated reCAPTCHA to reCAPTCHA Enterprise API for improved security and bot protection
+* Added Google Cloud Project ID field in reCAPTCHA settings
+* Updated reCAPTCHA verification to use Google Cloud assessments API
 
 = 3.3.43 - 2026.01.06 =
 * Fixed welcome page redirect not triggering on plugin activation

@@ -19,8 +19,8 @@ class Welcome
      */
     function activationRedirect($plugin, $network_wide)
     {
-        // Only for this plugin
-        if ($plugin !== plugin_basename(WPDM_BASE_DIR . '/download-manager.php')) {
+        // Only for this plugin (WPDM_BASE_DIR already has trailing slash)
+        if ($plugin !== plugin_basename(WPDM_BASE_DIR . 'download-manager.php')) {
             return;
         }
 
@@ -29,8 +29,12 @@ class Welcome
             return;
         }
 
-        // Skip for bulk activations
-        if (isset($_GET['activate-multi'])) {
+        // Skip for bulk activations (check both the action and the flag)
+        // During bulk activation, action is 'activate-selected', activate-multi is set after redirect
+        if (isset($_GET['activate-multi']) ||
+            (isset($_REQUEST['action']) && $_REQUEST['action'] === 'activate-selected') ||
+            (isset($_REQUEST['action2']) && $_REQUEST['action2'] === 'activate-selected') ||
+            (isset($_POST['checked']) && is_array($_POST['checked']) && count($_POST['checked']) > 1)) {
             return;
         }
 
