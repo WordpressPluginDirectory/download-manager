@@ -141,7 +141,7 @@ class Login
         $up = parse_url($log_redirect);
         if (isset($up['host']) && $up['host'] != $_SERVER['SERVER_NAME']) $log_redirect = __::valueof($_SERVER, 'REQUEST_URI', ['validate' => 'escs']);
 
-        $log_redirect = strip_tags($log_redirect);
+        $log_redirect = wp_validate_redirect($log_redirect, home_url('/'));
 
         if (!isset($params['logo'])) $params['logo'] = get_site_icon_url();
 
@@ -396,7 +396,7 @@ class Login
         $up = parse_url($log_redirect);
         if (isset($up['host']) && $up['host'] != $_SERVER['SERVER_NAME']) $log_redirect = __::valueof($_SERVER, 'REQUEST_URI', ['validate' => 'escs']);
 
-        $log_redirect = strip_tags($log_redirect);
+        $log_redirect = wp_validate_redirect($log_redirect, home_url('/'));
 
         if (!isset($params['logo']) || $params['logo'] == '') $params['logo'] = get_site_icon_url();
 
@@ -540,7 +540,7 @@ class Login
         $up = parse_url($log_redirect);
         if (isset($up['host']) && $up['host'] != $_SERVER['SERVER_NAME']) $log_redirect = __::valueof($_SERVER, 'REQUEST_URI', ['validate' => 'escs']);
 
-        $log_redirect = strip_tags($log_redirect);
+        $log_redirect = wp_validate_redirect($log_redirect, home_url('/'));
 
         if (!isset($params['logo']) || $params['logo'] == '') $params['logo'] = get_site_icon_url();
 

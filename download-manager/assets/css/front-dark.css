@@ -15,6 +15,7 @@
    ========================================================================== */
 
 /* Dark mode variables - System preference */
+/* Note: --color-primary and other color settings come from user settings, not overridden here */
 @media (prefers-color-scheme: dark) {
     .w3eden:not(.light-mode) {
         --dm-bg: #0f172a;
@@ -25,13 +26,6 @@
         --dm-text-muted: #94a3b8;
         --dm-border: #334155;
         --dm-border-light: #475569;
-        --color-primary: #8cbf6e;
-        --color-primary-hover: #9ed080;
-        --clr-sec: #94a3b8;
-        --color-success: #22c55e;
-        --color-danger: #f87171;
-        --color-warning: #fbbf24;
-        --color-info: #38bdf8;
     }
     .w3eden:not(.light-mode) {  color: var(--dm-text); }
     .w3eden:not(.light-mode) .card { background: var(--dm-bg-secondary); border-color: var(--dm-border); }
@@ -56,8 +50,6 @@
     .w3eden:not(.light-mode) .dropdown-item:hover { background: var(--dm-bg-tertiary); }
     .w3eden:not(.light-mode) .progress { background: var(--dm-bg-tertiary); }
     .w3eden:not(.light-mode) .input-group-text { background: var(--dm-bg-tertiary); border-color: var(--dm-border); color: var(--dm-text-secondary); }
-    .w3eden:not(.light-mode) .btn-light { --btn-bg: linear-gradient(180deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%); --btn-color: var(--dm-text); }
-    .w3eden:not(.light-mode) .btn-outline-secondary { --btn-color: var(--dm-text-secondary); --btn-border: var(--dm-border); }
     .w3eden:not(.light-mode) .alert-secondary, .w3eden:not(.light-mode) .alert-light { background: linear-gradient(180deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%); color: var(--dm-text-secondary); border-left-color: var(--dm-text-muted); }
     .w3eden:not(.light-mode) .wpdm-changelog { border-color: var(--dm-border); }
     .w3eden:not(.light-mode) .wpdm-changelog__header { border-color: var(--dm-border); }
@@ -78,6 +70,7 @@
 }
 
 /* Manual dark mode toggle via .dark-mode class */
+/* Note: --color-primary and other color settings come from user settings, not overridden here */
 .w3eden.dark-mode {
     --dm-bg: #0f172a;
     --dm-bg-secondary: #1e293b;
@@ -87,13 +80,6 @@
     --dm-text-muted: #94a3b8;
     --dm-border: #334155;
     --dm-border-light: #475569;
-    --color-primary: #8cbf6e;
-    --color-primary-hover: #9ed080;
-    --clr-sec: #94a3b8;
-    --color-success: #22c55e;
-    --color-danger: #f87171;
-    --color-warning: #fbbf24;
-    --color-info: #38bdf8;
     color: var(--dm-text);
 }
 .w3eden.dark-mode .card { background: var(--dm-bg-secondary); border-color: var(--dm-border); }
@@ -119,8 +105,6 @@
 .w3eden.dark-mode .dropdown-item:hover { background: var(--dm-bg-tertiary); }
 .w3eden.dark-mode .progress { background: var(--dm-bg-tertiary); }
 .w3eden.dark-mode .input-group-text { background: var(--dm-bg-tertiary); border-color: var(--dm-border); color: var(--dm-text-secondary); }
-.w3eden.dark-mode .btn-light { --btn-bg: linear-gradient(180deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%); --btn-color: var(--dm-text); }
-.w3eden.dark-mode .btn-outline-secondary { --btn-color: var(--dm-text-secondary); --btn-border: var(--dm-border); }
 .w3eden.dark-mode .alert-secondary, .w3eden.dark-mode .alert-light { background: linear-gradient(180deg, var(--dm-bg-tertiary) 0%, var(--dm-bg-secondary) 100%); color: var(--dm-text-secondary); border-left-color: var(--dm-text-muted); }
 .w3eden.dark-mode .wpdm-changelog { border-color: var(--dm-border); }
 .w3eden.dark-mode .wpdm-changelog__header { border-color: var(--dm-border); }
@@ -177,16 +161,6 @@
     border-top-color: #334155;
 }
 
-.wpdm-modal-wrapper.dark-mode .modal-footer .btn-secondary {
-    background: #334155;
-    border-color: #475569;
-    color: #e2e8f0;
-}
-
-.wpdm-modal-wrapper.dark-mode .modal-footer .btn-secondary:hover {
-    background: #475569;
-}
-
 .wpdm-modal-wrapper.dark-mode .wpdm-modal-loading .wpdm-spinner {
     border-color: #334155;
     border-top-color: var(--color-primary, #818cf8);
@@ -231,14 +205,6 @@ body.dark-mode.modal-open .modal-backdrop {
     .wpdm-modal-wrapper:not(.light-mode) .modal-footer {
         background: #0f172a;
         border-top-color: #334155;
-    }
-    .wpdm-modal-wrapper:not(.light-mode) .modal-footer .btn-secondary {
-        background: #334155;
-        border-color: #475569;
-        color: #e2e8f0;
-    }
-    .wpdm-modal-wrapper:not(.light-mode) .modal-footer .btn-secondary:hover {
-        background: #475569;
     }
     .wpdm-modal-wrapper:not(.light-mode) .wpdm-modal-loading .wpdm-spinner {
         border-color: #334155;
@@ -387,5 +353,53 @@ body.dark-mode.modal-open .modal-backdrop {
 
     .w3eden:not(.light-mode) .wpdm-filelist-count {
         color: var(--dm-text-muted, #94a3b8);
+    }
+}
+
+/* ==========================================================================
+   CUSTOM SELECT / CATEGORY FILTER DROPDOWN - DARK MODE
+   ========================================================================== */
+
+/* Dark Mode - Manual */
+.w3eden.dark-mode .wpdm-custom-select,
+.w3eden.dark-mode .wpdm-dt-category-filter {
+    background-color: var(--dm-bg-secondary, #1e293b) !important;
+    background-image: url("../images/sort.svg") !important;
+    border-color: var(--dm-border, #334155);
+    color: var(--dm-text, #f1f5f9);
+}
+
+.w3eden.dark-mode .wpdm-custom-select:focus,
+.w3eden.dark-mode .wpdm-dt-category-filter:focus {
+    border-color: var(--color-primary, #818cf8);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+.w3eden.dark-mode .wpdm-custom-select option,
+.w3eden.dark-mode .wpdm-dt-category-filter option {
+    background: var(--dm-bg-secondary, #1e293b);
+    color: var(--dm-text, #f1f5f9);
+}
+
+/* Dark Mode - System Preference */
+@media (prefers-color-scheme: dark) {
+    .w3eden:not(.light-mode) .wpdm-custom-select,
+    .w3eden:not(.light-mode) .wpdm-dt-category-filter {
+        background-color: var(--dm-bg-secondary, #1e293b) !important;
+        background-image: url("../images/sort.svg") !important;
+        border-color: var(--dm-border, #334155);
+        color: var(--dm-text, #f1f5f9);
+    }
+
+    .w3eden:not(.light-mode) .wpdm-custom-select:focus,
+    .w3eden:not(.light-mode) .wpdm-dt-category-filter:focus {
+        border-color: var(--color-primary, #818cf8);
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+    }
+
+    .w3eden:not(.light-mode) .wpdm-custom-select option,
+    .w3eden:not(.light-mode) .wpdm-dt-category-filter option {
+        background: var(--dm-bg-secondary, #1e293b);
+        color: var(--dm-text, #f1f5f9);
     }
 }

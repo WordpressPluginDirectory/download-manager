@@ -52,6 +52,14 @@ class Dashboard
     {
         global $wp_query, $WPDM;
 
+        // Enqueue dashboard styles only when shortcode is used
+        wp_enqueue_style('wpdm-dashboard', WPDM_ASSET_URL . 'css/wpdm-dashboard.min.css', [], WPDM_VERSION);
+
+        // Enqueue media scripts for profile picture upload
+        if (is_user_logged_in()) {
+            wp_enqueue_media();
+        }
+
         ob_start();
         if (!is_user_logged_in()) {
             echo WPDM()->user->login->form($params);

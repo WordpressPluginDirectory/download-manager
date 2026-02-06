@@ -5,7 +5,8 @@
  */
 
 if(!defined('ABSPATH')) die('!');
-$logo = isset($params['logo']) ? $params['logo'] : get_site_icon_url();
+$logo = wpdm_valueof($params, 'logo');
+if(!$logo) $logo = get_site_icon_url();
 $site_name = get_bloginfo('name');
 
 // Enqueue unified auth styles
@@ -27,6 +28,7 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
                     </div>
 
                     <div class="wpdm-auth-brand">
+                        <a href="<?php echo home_url(); ?>">
                         <?php if($logo){ ?>
                             <img src="<?php echo esc_attr($logo); ?>" alt="<?php echo esc_attr($site_name); ?>" />
                         <?php } else { ?>
@@ -35,6 +37,7 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
                             </div>
                         <?php } ?>
                         <span><?php echo esc_html($site_name); ?></span>
+                        </a>
                     </div>
 
                     <div class="wpdm-auth-welcome">

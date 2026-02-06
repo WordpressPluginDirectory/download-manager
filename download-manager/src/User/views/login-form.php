@@ -27,6 +27,7 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
                 </div>
 
                 <div class="wpdm-auth-brand">
+                    <a href="<?php echo home_url(); ?>">
                     <?php if($logo && !is_user_logged_in()){ ?>
                         <img src="<?php echo esc_attr($logo); ?>" alt="<?php echo esc_attr($site_name); ?>" />
                     <?php } else { ?>
@@ -35,6 +36,7 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
                         </div>
                     <?php } ?>
                     <span><?php echo esc_html($site_name); ?></span>
+                    </a>
                 </div>
 
                 <div class="wpdm-auth-welcome">
@@ -49,13 +51,13 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
 
             <!-- Right Panel - Form -->
             <div class="wpdm-auth-right">
-                <?php do_action("wpdm_before_login_form"); ?>
+
 
                 <div class="wpdm-auth-form-header">
                     <h1 class="wpdm-auth-form-title"><?php _e("Login Account", "download-manager"); ?></h1>
                     <p class="wpdm-auth-form-desc"><?php _e("Enter your credentials to access your account and continue where you left off.", "download-manager"); ?></p>
                 </div>
-
+                <?php do_action("wpdm_before_login_form"); ?>
                 <form name="loginform" id="loginform" action="" method="post">
                     <input type="hidden" name="permalink" value="<?php the_permalink(); ?>" />
 
@@ -139,7 +141,7 @@ wp_enqueue_style('wpdm-auth-forms', \WPDM\__\Template::locate_url('auth-forms.cs
                         </div>
                     <?php } ?>
 
-                    <input type="hidden" name="redirect_to" value="<?= htmlspecialchars_decode($log_redirect); ?>" />
+                    <input type="hidden" name="redirect_to" value="<?= esc_url($log_redirect); ?>" />
                 </form>
 
                 <!-- Social Login -->
@@ -209,7 +211,7 @@ jQuery(function ($) {
                     <?php } ?>
                 } else {
                     setTimeout(function () {
-                        location.href = "<?= wp_sanitize_redirect(htmlspecialchars_decode($log_redirect)); ?>";
+                        location.href = "<?= esc_url($log_redirect); ?>";
                     }, 1000);
                 }
             },
@@ -224,7 +226,7 @@ jQuery(function ($) {
                     let proceed = await WPDM.doAction("wpdm_user_login", res);
                     $btn.html('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>' + res.message + '</span>');
                     setTimeout(function () {
-                        location.href = "<?= wp_sanitize_redirect(htmlspecialchars_decode($log_redirect)); ?>";
+                        location.href = "<?= esc_url($log_redirect); ?>";
                     }, 1000);
                 }
             }

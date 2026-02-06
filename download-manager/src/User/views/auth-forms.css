@@ -172,13 +172,13 @@
 }
 
 /* Left panel content */
-.w3eden .wpdm-auth-brand {
+.w3eden .wpdm-auth-brand a{
     display: flex;
     align-items: center;
     gap: 12px;
     color: #fff;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 800;
     letter-spacing: 0.5px;
     position: relative;
     z-index: 1;
