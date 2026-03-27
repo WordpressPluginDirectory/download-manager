@@ -4,11 +4,8 @@
         <div class="card mb-3 p-3 hide_empty [hide_empty:featured_image]">[featured_image]</div>
     </div>
     <div class="col-md-5">
-        <div class="wpdm-button-area mb-3 p-3 card">
+        <div class="wpdm-button-area mb-3">
             [download_link]
-            <div class="alert alert-warning mt-2 [hide_empty:expire_date]">
-                Download is available until [expire_date]
-            </div>
         </div>
         <ul class="list-group ml-0 mb-2">
             <li class="list-group-item d-flex justify-content-between align-items-center [hide_empty:version]">
