@@ -5,8 +5,7 @@ Tags: download manager, document management, file manager, digital store, ecomme
 Requires at least: 5.3
 Tested up to: 7.0
 License: GPLv3
-Stable tag: 3.3.56
-
+Stable tag: 3.3.59
 
 This File Management & Digital Store plugin will help you to control file downloads & sell digital products from your WP site.
 
@@ -203,9 +202,26 @@ By using this plugin, you acknowledge and agree to the terms and policies of the
 
 == Changelog ==
 
+= 3.3.59 - 2026.06.28 =
+* Fixed: Authenticated (Contributor+) Stored Cross-Site Scripting via the not_found attribute of the wpdm_packages shortcode ( Reported by Wordfence )
+* Improved: Modernized admin dialogs by routing alert/confirm/popup modals and the password generator through the WPDM dialog system
+* Improved: Redesigned the Add-Ons page with a modern, card-based UI
+* Improved: Category filter on the Add-Ons page now shows the add-on count for each category
+* Fixed: Social media icons in email templates no longer render with an empty link when the profile URL is left blank
+
+= 3.3.58 - 2026.06.16 =
+* New: Category filter dropdown on the package list table
+* New: Sortable "Views" column on the package list table
+* New: Inline status badges ( No file attached / Locked / Password ) on the package list
+* New: Bulk actions to duplicate packages and reset download count
+* Fixed: Reflected XSS via the REFERRER parameter on the download lock iframe ( Reported by Wordfence )
+
+= 3.3.57 - 2026.05.28 =
+* Hardened: Use prepared statement in TempStorage::get() as a defense-in-depth measure against SQL injection
+
 = 3.3.56 - 2026.05.26 =
 * Compatibility update for WorPress 7.0
-* Fixed: XSS issue in download history page
+* Fixed: XSS issue in download history page ( Reported by Jungnickel, Luca Moritz )
 
 = 3.3.55 - 2026.05.04 =
 * Improved: Crypt class
