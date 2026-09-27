@@ -39,9 +39,16 @@ class PackageLocks
         $limit = get_option('__wpdm_private_link_usage_limit', 3);
         $xpire_period = ((int)get_option('__wpdm_private_link_expiration_period', 3)) * ((int)get_option('__wpdm_private_link_expiration_period_unit', 60));
         $xpire_period = $xpire_period > 0 ? $xpire_period : 3600;
+        $packageID = wpdm_query_var('__wpdm_ID', 'int');
+
+        //Only issue a key for a published package that is actually captcha locked and accessible to the current user
+        if (!$this->isCaptchaUnlockable($packageID)) {
+            wp_send_json(['error' => __("Invalid request!", "download-manager")]);
+        }
+
         $ret = wpdm_recaptcha_enterprise_verify(wpdm_query_var('reCaptchaVerify'), 'DOWNLOAD');
         if ($ret['success']) {
-            $download_url = WPDM()->package->expirableDownloadLink(wpdm_query_var('__wpdm_ID', 'int'), $limit, $xpire_period);
+            $download_url = WPDM()->package->expirableDownloadLink($packageID, $limit, $xpire_period);
             $data['downloadurl'] = $download_url;
         } else {
             $data['error'] = __("Captcha Verification Failed!", "wpmdpro");
@@ -49,6 +56,18 @@ class PackageLocks
 
         wp_send_json($data);
         die();
+    }
+
+    /**
+     * Check if the captcha lock of the given package can issue a download key
+     * @param $packageID
+     * @return bool
+     */
+    private function isCaptchaUnlockable($packageID)
+    {
+        if (!$packageID || get_post_type($packageID) !== 'wpdmpro' || get_post_status($packageID) !== 'publish') return false;
+        if ((int)get_post_meta($packageID, '__wpdm_captcha_lock', true) !== 1) return false;
+        return WPDM()->package->userCanAccess($packageID);
     }
 
     function validatePassword()
@@ -78,7 +97,8 @@ class PackageLocks
 	    }
 
         //Check if the given password is matched
-        if ($passwords && $password != $passwords && substr_count($passwords, "[$password]") < 1) {
+        //Use strict, timing-safe comparison to avoid PHP type-juggling bypass (e.g. numeric password "123" matched by "1.23e2")
+        if ($passwords && !hash_equals((string) $passwords, (string) $password) && substr_count($passwords, "[$password]") < 1) {
             $data['message'] = __("Wrong Password!", "download-manager") . " &nbsp; <span><i class='fas fa-redo'></i> " . __("Try Again", "download-manager") . " </span>";
 			$error = true;
         }
@@ -98,7 +118,7 @@ class PackageLocks
             Session::set("pass_verified_" . $packageID, 1);
             $passwordUsage[$password] = wpdm_valueof($passwordUsage, $password, ['validate' => 'int']) + 1;
             update_post_meta($packageID, '__wpdm_password_usage', $passwordUsage);
-            $data = ['success' => true, 'downloadurl' => WPDM()->package->expirableDownloadLink($packageID)];
+            $data = ['success' => true, 'downloadurl' => WPDM()->package->expirableDownloadLink($packageID, $limit, $expirePeriod)];
         }
         wp_send_json($data);
     }

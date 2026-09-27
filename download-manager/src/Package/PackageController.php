@@ -117,12 +117,14 @@ class PackageController extends PackageTemplate {
 
 		$ID = $post_vars['ID'];
 
-		$post_vars['title']       = stripcslashes( $post_vars['post_title'] );
+		// Never run stripcslashes() on stored input: it decodes C-style escapes
+		// ( \x3C etc. ) back into active markup after save-time KSES has already run.
+		$post_vars['title']       = esc_html( $post_vars['post_title'] );
 
 		$template_tags = $this->parseTemplate( $template, $ID, $template_type );
 
 		if(in_array('description', $template_tags)) {
-			$post_vars['description'] = stripcslashes( str_replace( "[wpdm", "[__wpdm", wp_kses_post( $post_vars['post_content'] ) ) );
+			$post_vars['description'] = str_replace( "[wpdm", "[__wpdm", wp_kses_post( $post_vars['post_content'] ) );
 			$post_vars['description'] = wpautop( stripslashes( $post_vars['description'] ) );
 
 			if($template_type === 'page') {
@@ -136,7 +138,7 @@ class PackageController extends PackageTemplate {
 			$post_vars['description'] = wpautop(strip_shortcodes( $post_vars['post_content'] ));
 		}
 
-		$post_vars['excerpt'] = wpautop( stripcslashes( wpdm_escs( $post_vars['post_excerpt'] ) ) );
+		$post_vars['excerpt'] = wpautop( wp_kses_post( $post_vars['post_excerpt'] ) );
 		$author               = get_user_by( 'id', $post_vars['post_author'] );
 		if ( is_object( $author ) ) {
 			$post_vars['author_name'] = $author->display_name;
@@ -217,7 +219,7 @@ class PackageController extends PackageTemplate {
 		$post_vars['link_label']  = isset( $post_vars['link_label'] ) ? esc_attr( $post_vars['link_label'] ) : esc_attr__( "Download", "download-manager" );
 		$post_vars['page_url']    = get_permalink( $post_vars['ID'] );
 		$post_vars['page_link']   = "<a href='" . $post_vars['page_url'] . "'>{$post_vars['title']}</a>";
-		$post_vars['page_url_qr'] = "<img class='wpdm-qr-code wpdm-qr-code{$post_vars['ID']}' style='max-width: 250px' src='https://chart.googleapis.com/chart?cht=qr&chs=450x450&choe=UTF-8&chld=H|0&chl={$post_vars['page_url']}' alt='{$post_vars['title']}' />";
+		$post_vars['page_url_qr'] = "<img class='wpdm-qr-code wpdm-qr-code{$post_vars['ID']}' style='max-width: 250px' src='https://chart.googleapis.com/chart?cht=qr&chs=450x450&choe=UTF-8&chld=H|0&chl=" . esc_attr( $post_vars['page_url'] ) . "' alt='" . esc_attr( $post_vars['title'] ) . "' />";
 
 
 		if ( ! isset( $post_vars['btnclass'] ) ) {
@@ -1607,13 +1609,13 @@ class PackageController extends PackageTemplate {
 	 *
 	 * @return string
 	 */
-	function expirableDownloadLink( $ID, $usageLimit = 10, $expirePeriod = 999999, $sessionOnly = true ) {
-		$key = uniqid();
+	function expirableDownloadLink( $ID, $usageLimit = 3, $expirePeriod = 604800, $sessionOnly = true ) {
+		$key = wp_generate_password( 32, false );
 		$exp = array( 'use' => $usageLimit, 'expire' => time() + $expirePeriod );
 		if ( ! $sessionOnly ) {
-			update_post_meta( $ID, "__wpdmkey_" . $key, $exp );
+			TempStorage::set( "__wpdmkey_{$key}_{$ID}", $exp, $expirePeriod, TempStorage::DURABLE_SCOPE );
 		} else {
-			TempStorage::set( "__wpdmkey_{$key}_{$ID}", $exp, time() + $expirePeriod );
+			Session::set( "__wpdmkey_{$key}_{$ID}", $exp, $expirePeriod );
 		}
 		//Session::set( '__wpdm_unlocked_'.$ID , 1 );
 		//$download_url = $this->getDownloadURL($ID, "_wpdmkey={$key}");
@@ -1632,12 +1634,12 @@ class PackageController extends PackageTemplate {
 	 * @return string
 	 */
 	static function expirableDownloadPage( $ID, $usageLimit = 10, $expirePeriod = 604800, $sessionOnly = true ) {
-		$key = uniqid();
+		$key = wp_generate_password( 32, false );
 		$exp = array( 'use' => $usageLimit, 'expire' => time() + $expirePeriod );
 		if ( ! $sessionOnly ) {
-			update_post_meta( $ID, "__wpdmkey_" . $key, $exp );
+			TempStorage::set( "__wpdmkey_{$key}_{$ID}", $exp, $expirePeriod, TempStorage::DURABLE_SCOPE );
 		} else {
-			TempStorage::set( "__wpdmkey_{$key}_{$ID}", $exp, time() + $expirePeriod );
+			Session::set( "__wpdmkey_{$key}_{$ID}", $exp, $expirePeriod );
 		}
 		$download_page_key = Crypt::encrypt( array( 'pid' => $ID, 'key' => $key ) );
 		$download_page     = home_url( "wpdm-download/{$download_page_key}" );
@@ -1882,6 +1884,11 @@ class PackageController extends PackageTemplate {
 			$vars['video_preview_modal'] = self::videoPreviewModal( $vars, $type );
 		}
 
+		// [changelog] – must be resolved before the [hide_empty:changelog] pass below
+		if ( strpos( $template, '[changelog]' ) !== false ) {
+			$vars['changelog'] = $this->changelog( $vars['ID'] );
+		}
+
 
 		$vars['fav_button']        = self::favBtn( $vars['ID'] );
 		$vars['fav_button_sm']     = self::favBtn( $vars['ID'], array(
@@ -1910,7 +1917,7 @@ class PackageController extends PackageTemplate {
 			if ( ! isset( $vars[ $hematches[1][ $index ] ] ) || ( $vars[ $hematches[1][ $index ] ] == '' || $vars[ $hematches[1][ $index ] ] == '0' ) ) {
 				$vars[ $hide_empty ] = 'wpdm_hide wpdm_remove_empty';
 			} else {
-				$value[ $hide_empty ] = '';
+				$vars[ $hide_empty ] = '';
 			}
 		}
 
@@ -2335,8 +2342,8 @@ class PackageController extends PackageTemplate {
 		$banner = get_the_post_thumbnail_url( $ID, array( 600, 400 ) );
 		$logo   = get_site_icon_url();
 		foreach ( $emails as $index => $email ) {
-			$download_link      = WPDM()->package->expirableDownloadLink( $ID, $usageLimit, $expireTime );
-			$download_page_link = WPDM()->package->expirableDownloadPage( $ID, $usageLimit, $expireTime );
+			$download_link      = WPDM()->package->expirableDownloadLink( $ID, $usageLimit, $expireTime, false );
+			$download_page_link = WPDM()->package->expirableDownloadPage( $ID, $usageLimit, $expireTime, false );
 			$params             = array(
 				'to_email'          => $email,
 				'name'              => isset( $names[ $index ] ) ? $names[ $index ] : '',
@@ -2402,7 +2409,7 @@ class PackageController extends PackageTemplate {
 			$icon = FileSystem::fileTypeIcon( $ext );
 		}
 		if ( $html ) {
-			$icon = "<img src='{$icon}' alt='Icon' class='$class' />";
+			$icon = "<img src='" . esc_url( $icon ) . "' alt='Icon' class='" . esc_attr( $class ) . "' />";
 		}
 
 		return apply_filters( "wpdm_package_icon", $icon, $ID );
@@ -2534,9 +2541,23 @@ class PackageController extends PackageTemplate {
 
 	function addViewCount() {
 
-		//__::isAuthentic( '__wpdm_view_count', NONCE_KEY, 'read', false );
+		// Verify the request originated from a rendered package page. 'read' still
+		// permits guests, so this does not gate legitimate visitors - it only stops
+		// blind POSTs against this endpoint. Bails out via wp_send_json() on failure.
+		__::isAuthentic( '__wpdm_view_count', NONCE_KEY, 'read', false );
 
-		$id    = (int) ( $_REQUEST['id'] );
+		$id = (int) __::valueof( $_REQUEST, 'id', [ 'default' => 0, 'validate' => 'int' ] );
+
+		// Only packages get a view count. Without this, any ID could be used to
+		// create/increment __wpdm_view_count meta on arbitrary posts and pages.
+		if ( $id <= 0 || get_post_type( $id ) !== 'wpdmpro' ) {
+			wp_send_json( [
+				'success' => false,
+				'type'    => 'error',
+				'message' => __( 'Invalid package.', 'download-manager' )
+			], 400 );
+		}
+
 		$views = (int) get_post_meta( $id, '__wpdm_view_count', true );
 		update_post_meta( $id, '__wpdm_view_count', $views + 1 );
 		wp_send_json( [ 'views' => $views + 1 ] );
@@ -2610,9 +2631,9 @@ class PackageController extends PackageTemplate {
 			}
 		}
 		if ( count( $posts ) == 0 ) {
-			$html = "<div class='col-md-12'><div class='alert alert-info'>" . __( "No related download found!", "download-manager" ) . "</div> </div>";
+			$html = ""; //"<div class='col-md-12'><div class='alert alert-info'>" . __( "No related download found!", "download-manager" ) . "</div> </div>";
 		}
-		$html = "<div class='w3eden'><div class='row'>" . $html . "</div></div>";
+		$html = $html !== '' ? "<div class='w3eden'><div class='row'>" . $html . "</div></div>" : "";
 		wp_reset_query();
 
 		return $html;
@@ -2740,7 +2761,7 @@ class PackageController extends PackageTemplate {
 			$html .= $date;
 			$html .= '</span>';
 			$html .= '</div>';
-			$html .= '<button type="button" class="wpdm-changelog__toggle" aria-label="' . esc_attr__('Toggle details', 'download-manager') . '">';
+			$html .= '<button type="button" class="wpdm-changelog__toggle" aria-expanded="' . ($is_collapsed ? 'false' : 'true') . '" aria-label="' . esc_attr__('Toggle details', 'download-manager') . '">';
 			$html .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
 			$html .= '</button>';
 			$html .= '</div>';
@@ -2757,17 +2778,26 @@ class PackageController extends PackageTemplate {
 		$html .= '</div>'; // .wpdm-changelog__list
 		$html .= '</div>'; // .wpdm-changelog
 
-		// Add inline JavaScript for toggle functionality
+		// Add inline JavaScript for toggle functionality.
+		// This markup is emitted once per changelog, so the handler must be idempotent:
+		// binding per-header would attach one listener per changelog on the page, and a
+		// click would then toggle the class once per listener (i.e. cancel itself out
+		// whenever a page holds an even number of changelogs). A single delegated
+		// listener guarded by a flag also covers changelogs inserted later via AJAX.
 		$html .= "
 		<script>
 		(function() {
-			document.querySelectorAll('.wpdm-changelog [data-toggle=\"changelog\"]').forEach(function(header) {
-				header.addEventListener('click', function() {
-					var item = this.closest('.wpdm-changelog__item');
-					if (item) {
-						item.classList.toggle('wpdm-changelog__item--collapsed');
-					}
-				});
+			if (window.__wpdmChangelogBound) return;
+			window.__wpdmChangelogBound = true;
+			document.addEventListener('click', function(e) {
+				if (!e.target || !e.target.closest) return;
+				var header = e.target.closest('.wpdm-changelog [data-toggle=\"changelog\"]');
+				if (!header) return;
+				var item = header.closest('.wpdm-changelog__item');
+				if (!item) return;
+				var collapsed = item.classList.toggle('wpdm-changelog__item--collapsed');
+				var toggle = header.querySelector('.wpdm-changelog__toggle');
+				if (toggle) toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 			});
 		})();
 		</script>";

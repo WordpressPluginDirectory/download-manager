@@ -3,9 +3,9 @@ Contributors: w3eden, codename065, shahriar0822, shimo16ab, shafayat-alam
 Donate link:
 Tags: download manager, document management, file manager, digital store, ecommerce, download monitor
 Requires at least: 5.3
-Tested up to: 7.0
+Tested up to: 7.1
 License: GPLv3
-Stable tag: 3.3.59
+Stable tag: 3.3.71
 
 This File Management & Digital Store plugin will help you to control file downloads & sell digital products from your WP site.
 
@@ -201,6 +201,79 @@ By using this plugin, you acknowledge and agree to the terms and policies of the
 19. More features
 
 == Changelog ==
+
+= 3.3.71 - 2026.09.27 =
+* Security: Fixed Subscriber+ Stored XSS via display name in the Download History user filter ( Reported by Wordfence )
+* Security: Fixed CSRF on the settings screen that could overwrite Privacy options, including the cron key ( Reported by Kartik Sharma via WPScan )
+* Security: Fixed unauthenticated download of protected files via cross-package CAPTCHA validation ( Reported by Raj Ukani via WPScan )
+* Security: Fixed Author+ Stored XSS via the package icon URL ( Reported by Mark Moore via WPScan )
+* Fixed: Display names are escaped in the public profile card and account status view
+
+= 3.3.70 - 2026.09.23 =
+* Fixed: Previewing a large link or page template failed because the whole template was passed in the preview URL and exceeded the server's URI length limit; the template is now held server-side for the preview session and the URL carries only a short-lived token
+* Fixed: The related downloads section rendered an empty wrapper when a package had no related downloads; nothing is output now when there is nothing to show
+* Fixed: A PHP warning - "file_exists(): File name is longer than the maximum allowed path length" - while rendering a package whose link or page template is given as inline markup rather than the name of a saved template; the lookup now recognises that such a value cannot be a template id instead of handing the whole template body to the filesystem as a path
+
+= 3.3.69 - 2026.09.16 =
+* Improved: The Asset Manager's New Folder and New File dialogs are now a single panel that anchors under the button that opened it, with inline validation for empty names and names containing slashes, a busy state while the folder or file is created, and any error returned by the server shown in place rather than the panel closing as though it had worked
+* Improved: Rebuilt the Asset Manager upload tray with a dedicated drop zone, a running "x of y uploaded" summary, a "Clear finished" action, and per-file rows carrying a progress bar, transferred size and final status
+* Fixed: A failed upload in the Asset Manager gave no indication of what had gone wrong - oversized files, disallowed file types and expired sessions now report the reason on the file's own row
+* Fixed: A malformed HTTP Range header could raise a PHP warning, or a fatal "Unsupported operand types" error on PHP 8, while serving a download; range requests are now validated and answered with a 416 Requested Range Not Satisfiable response when the range cannot be served
+* Fixed: A ranged download streamed the remainder of the file past the requested end byte, and a suffix range ( e.g. "bytes=-500", meaning the last 500 bytes ) was miscalculated
+* Security: Contributor+ Insecure Direct Object Reference in the package duplicate handler - the handler hooked on admin_init checked only the generic edit_posts capability, which every contributor holds, and a plugin-wide static nonce action that any logged-in user could obtain from an unrelated front-end form; neither is tied to the package being copied, so a contributor could duplicate any other user's package and inherit its file references, role-based access restrictions and password lock into a copy they own and can strip bare. The handler now requires the same capability as the duplicate row action and the bulk action, adds an edit_post check against the target package, and verifies a package-scoped nonce
+
+= 3.3.68 - 2026.08.20 =
+* Improved: Redesigned the activity report email with a clearer hierarchy - the headline figure now leads each section, metric cards share a common baseline, and every section carries a designed empty state so a quiet period still reads as intentional
+* Improved: Activity report tables now expose proper column headers to screen readers, and layout tables are marked as presentational
+* Security: Unauthenticated password-protection bypass via PHP type juggling - the package password check ( validate-password REST endpoint ) used a loose comparison, so a download protected with an all-numeric password could be unlocked by submitting an equivalent numeric string ( e.g. "1.23e2" in place of "123" ) without knowing the real password; the check now uses a strict, timing-safe comparison ( Reported by Shikhali Jamalzade )
+* Security: Missing Authorization on the public profile menu endpoint ( wpdm_get_profile_menu_content ) let unauthenticated visitors read any registered user's favourites list by passing an arbitrary user id; the profile owner id is now bound into the signed request token and the handler validates the requested menu, so profile content can only be loaded through a genuine public profile page ( Reported by Harsh Sanghvi )
+
+= 3.3.67 - 2026.07.30 =
+* Security: Contributor+ Stored Cross-Site Scripting via the icon and icon_width attributes of the [wpdm_category] shortcode - the attribute values were interpolated into the image tag unescaped and could break out of the src / style attribute to inject an onerror/onload handler; UI::img() now escapes the src with esc_url() and all other attributes with esc_attr(), and the shortcode sanitizes the icon URL on input ( Reported by Wordfence )
+
+= 3.3.66 - 2026.07.17 =
+* Security: Author+ Stored Cross-Site Scripting via Package Title - the title was run through stripcslashes() when rendered, which decoded C-style escape sequences back into active markup after save-time sanitization had already accepted them; the title is no longer decoded and is now escaped on output ( Reported by Yaswanth Reddy Sunkara )
+* Security: Removed the same escape-sequence decoding from the package description and excerpt, which were open to the identical Author+ Stored XSS vector; the excerpt is now sanitized with wp_kses_post() instead of a filter that only stripped script tags
+* Security: The package title and page URL are now escaped where they are substituted into the QR code image attributes
+* Security: Removed the unauthenticated POST /wpdm/view-count REST route, which let anyone increment the view counter meta on any post ID; the route was unused, as view counts are recorded through the wpdm_view_count ajax action
+* Security: The view count handler now verifies its nonce, which had been left commented out, and only accepts wpdmpro packages, so the counter meta can no longer be created on unrelated posts and pages
+
+= 3.3.65 - 2026.07.12 =
+* Fixed: The [wpdm_changelog] shortcode rendered unstyled, because its markup was emitted without the wrapper element that the front-end stylesheet scopes every changelog rule to
+
+= 3.3.64 - 2026.07.12 =
+* Fixed: The [changelog] template tag rendered unstyled, because the front-end stylesheet still targeted an older markup structure - entry content was hidden outright, the timeline had no layout and the icons rendered at their oversized default dimensions
+* Fixed: Changelog toggling stopped working entirely on pages holding more than one changelog, where every entry picked up a duplicate click handler that cancelled itself out
+* Improved: Changelog toggle buttons now expose their expanded state to assistive technology, and the newest release is highlighted in both light and dark mode
+
+= 3.3.63 - 2026.07.06 =
+* New: Activity Reports - scheduled weekly or monthly summary emails covering downloads, top packages, trending items, user activity, category breakdown and storage usage, with configurable sections, recipients, schedule and a test-report option
+* New: Cron Jobs settings tab showing background job stats, job history and scheduled events
+* Improved: Rebuilt the background job system with job queues, priorities, automatic retries and job locking; job handlers are now whitelisted for security
+* Improved: Legacy confirmation dialogs now route through the WPDM dialog system with proper button styling and a graceful fallback when the dialog script is unavailable
+* Fixed: The "require admin approval" check now applies to every authentication flow, so unapproved accounts can no longer sign in through flows that skip the username parameter
+* Fixed: PHP warning for an undefined variable during authentication
+* Fixed: The [changelog] template tag is now parsed in package page templates, so the changelog timeline renders instead of printing the raw tag
+* Fixed: The [hide_empty:tag] template tag no longer leaks into the markup when the target tag has a value
+
+= 3.3.62 - 2026.07.02 =
+* Improved: Expirable download link handling
+* Improved: Emailed and shareable download links are now kept in a durable, indexed store instead of post meta, so they survive cache clears and no longer bloat package meta
+* Improved: Indexed the sessions table and stopped duplicate-row accumulation for faster temporary-token lookups and cleanup
+* Security: Added directory-traversal containment to the protected media file handler so the wpdmmedia parameter cannot resolve to files outside the uploads directory
+* Security: Media password verification now requires the item to be private with a non-empty password and uses a strict comparison
+* Security: Hardened the modal login form redirect field ( REQUEST_URI ) with esc_url() output escaping
+* Security: Authenticated (Contributor+) Stored Cross-Site Scripting via the note_before and note_after attributes of the wpdm_reg_form shortcode ( Reported by Wordfence )
+* Security: Temporary download link tokens ( _wpdmkey ) are now generated with a cryptographically secure generator instead of uniqid() ( Reported by Pedro Pinho )
+* Security: Download links issued after a password, captcha or role lock are now bound to the originating session and can no longer be reused from a different device or session if the link is leaked ( Reported by Pedro Pinho )
+
+= 3.3.61 - 2026.06.29 =
+* Fixed: Authenticated (Contributor+) Stored Cross-Site Scripting via the no_data_msg attribute of the wpdm_all_packages shortcode ( Reported by Wordfence )
+
+= 3.3.60 - 2026.06.28 =
+* Fixed: Stats history page no longer sends stored visitor IP addresses to the external geolocation API when IP handling is disabled ( __wpdm_noip )
+* Fixed: Stats history page now loads the bundled local Select2 assets instead of an external CDN ( supply-chain hardening )
+* Fixed: Escaped the visitor IP in the ip-api.com lookup links on the stats history page
 
 = 3.3.59 - 2026.06.28 =
 * Fixed: Authenticated (Contributor+) Stored Cross-Site Scripting via the not_found attribute of the wpdm_packages shortcode ( Reported by Wordfence )
